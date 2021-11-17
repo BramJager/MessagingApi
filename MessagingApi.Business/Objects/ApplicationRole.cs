@@ -5,5 +5,6 @@ namespace MessagingApi.Business.Objects
 {
     public class ApplicationRole : IdentityRole<Guid>
     {
+
     }
 }
