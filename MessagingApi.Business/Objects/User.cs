@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace MessagingApi.Business.Objects
 {
-    public class ApplicationUser : IdentityUser<int>
+    public class User : IdentityUser<int>
     {
         private string _name;
 

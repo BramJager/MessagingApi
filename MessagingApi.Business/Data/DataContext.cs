@@ -1,13 +1,12 @@
 ﻿using MessagingApi.Business.Objects;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MessagingApi.Business.Data
 {
-    public class ApplicationContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
+    public class DataContext : IdentityDbContext<User, Role, int>
     {
-        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
 
         }
@@ -19,30 +18,30 @@ namespace MessagingApi.Business.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<ApplicationRole>().HasData
+            modelBuilder.Entity<Role>().HasData
                (
-                new ApplicationRole { Id = 1, Name = "User" },
-                new ApplicationRole { Id = 2, Name = "Groupmoderator"},
-                new ApplicationRole { Id = 3, Name = "Administrator" }
+                new Role { Id = 1, Name = "User", NormalizedName = "USER" },
+                new Role { Id = 2, Name = "Groupmoderator", NormalizedName = "GROUPMODERATOR"},
+                new Role { Id = 3, Name = "Administrator", NormalizedName = "ADMINISTRATOR" }
                );
 
-            modelBuilder.Entity<ApplicationUser>()
+            modelBuilder.Entity<User>()
                 .Property(u => u.UserName)
                 .IsRequired();
 
-            modelBuilder.Entity<ApplicationUser>()
+            modelBuilder.Entity<User>()
                 .Property(u => u.Email)
                 .IsRequired();
 
-            modelBuilder.Entity<ApplicationUser>()
+            modelBuilder.Entity<User>()
                 .Property(u => u.PasswordHash)
                 .IsRequired();
 
-            modelBuilder.Entity<ApplicationUser>()
+            modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
-            modelBuilder.Entity<ApplicationUser>()
+            modelBuilder.Entity<User>()
                 .HasIndex(u => u.UserName)
                 .IsUnique();
         }

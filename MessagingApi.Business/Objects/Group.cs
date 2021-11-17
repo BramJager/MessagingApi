@@ -8,6 +8,6 @@ namespace MessagingApi.Business.Objects
 
         public ICollection<Message> Messages { get; set; }
 
-        public ICollection<ApplicationUser> Users { get; set; }
+        public ICollection<User> Users { get; set; }
     }
 }

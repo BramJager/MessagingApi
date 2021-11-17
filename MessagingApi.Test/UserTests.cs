@@ -1,4 +1,6 @@
-﻿using Xunit;
+﻿using MessagingApi.Business.Objects;
+using System;
+using Xunit;
 
 namespace MessagingApi.Test
 {
@@ -52,11 +54,14 @@ namespace MessagingApi.Test
         public void Should_ThrowException_When_UsernameUserIsNotUnique()
         {
             //Arrange
+            User user = new User() { Id = 1, UserName = "henkie"};
 
             //Act
+            Action action = () => user.Id.ToString();
+
 
             //Assert
-
+            Assert.Throws<ArgumentException>(action);
         }
 
         [Fact]

@@ -2,7 +2,7 @@
 
 namespace MessagingApi.Business.Objects
 {
-    public class ApplicationRole : IdentityRole<int>
+    public class Role : IdentityRole<int>
     {
 
     }

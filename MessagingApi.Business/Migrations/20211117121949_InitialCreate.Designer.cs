@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MessagingApi.Business.Migrations
 {
-    [DbContext(typeof(ApplicationContext))]
+    [DbContext(typeof(DataContext))]
     [Migration("20211117121949_InitialCreate")]
     partial class InitialCreate
     {
