@@ -1,4 +1,4 @@
-﻿using MessagingApi.Business.Objects;
+﻿using MessagingApi.Domain.Objects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

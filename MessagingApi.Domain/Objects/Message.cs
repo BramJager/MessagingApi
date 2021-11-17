@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MessagingApi.Business.Objects
+namespace MessagingApi.Domain.Objects
 {
     public class Message
     {

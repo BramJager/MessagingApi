@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace MessagingApi.Business.Objects
+namespace MessagingApi.Domain.Objects
 {
     public class User : IdentityUser<int>
     {

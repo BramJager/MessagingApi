@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MessagingApi.Business.Objects
+namespace MessagingApi.Domain.Objects
 {
     public class Group
     {

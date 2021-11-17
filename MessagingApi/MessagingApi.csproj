@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MessagingApi.Business\MessagingApi.Business.csproj" />
+    <ProjectReference Include="..\MessagingApi.Domain\MessagingApi.Domain.csproj" />
   </ItemGroup>
 
 </Project>

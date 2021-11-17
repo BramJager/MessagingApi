@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace MessagingApi.Business.Objects
+namespace MessagingApi.Domain.Objects
 {
     public class Role : IdentityRole<int>
     {
