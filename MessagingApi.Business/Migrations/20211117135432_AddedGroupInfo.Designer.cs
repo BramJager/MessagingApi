@@ -4,14 +4,16 @@ using MessagingApi.Business.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MessagingApi.Business.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20211117135432_AddedGroupInfo")]
+    partial class AddedGroupInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,21 +115,21 @@ namespace MessagingApi.Business.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "5add2693-46f1-4bf8-a0ce-ed3e7b2cbe67",
+                            ConcurrencyStamp = "fdd469e3-a6f2-468e-a348-b51bfd2a4e2f",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "ece97cc3-f26f-4f38-8823-57ef1d2c8cb1",
+                            ConcurrencyStamp = "b161f35d-34b5-47df-bbc4-3e15ba52d7de",
                             Name = "Groupmoderator",
                             NormalizedName = "GROUPMODERATOR"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "a7e5262e-055f-47ae-aa9d-962e9ab9c160",
+                            ConcurrencyStamp = "7b2711fe-25ac-4e23-a7bd-e9961e1d4d93",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -167,9 +169,7 @@ namespace MessagingApi.Business.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("nvarchar(max)")
-                        .HasComputedColumnSql("[FirstName] + ' ' + [Surname]");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)

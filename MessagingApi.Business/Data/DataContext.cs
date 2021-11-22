@@ -26,6 +26,10 @@ namespace MessagingApi.Business.Data
                );
 
             modelBuilder.Entity<User>()
+            .Property(b => b.Name)
+            .HasComputedColumnSql("[FirstName] + ' ' + [Surname]");
+
+            modelBuilder.Entity<User>()
                 .Property(u => u.UserName)
                 .IsRequired();
 

@@ -6,20 +6,12 @@ namespace MessagingApi.Domain.Objects
 {
     public class User : IdentityUser<int>
     {
-        private string _name;
-
         [Required]
-        public string Name
-        {
-            get { return _name; }
-            set
-            {
-                _name = $"{FirstName} {Surname}";
-            }
-        }
+        public string Name { get; set; }
 
         [Required]
         public string FirstName { get; set; }
+
         [Required]
         public string Surname { get; set; }
 

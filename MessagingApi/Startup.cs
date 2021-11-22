@@ -1,7 +1,12 @@
+using MessagingApi.Business;
 using MessagingApi.Business.Data;
+using MessagingApi.Business.Interfaces;
+using MessagingApi.Business.Settings;
+using MessagingApi.Domain.Objects;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,9 +30,28 @@ namespace MessagingApi
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
+            services.AddAuthorization();
 
             services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            
+            services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));    
+            
+            services.AddIdentity<User, Role>()
+                .AddEntityFrameworkStores<DataContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddScoped<IRepository<User>, UserRepository>();
+            //services.AddScoped<IRepository<Group>, GroupRepository>();
+            //services.AddScoped<IRepository<Message>, MessageRepository>();
+
+            services.AddScoped<IUserService, UserService>();
+            //services.AddScoped<IMessageService, MessageService>();
+            //services.AddScoped<IGroupService, GroupService>();
+
+            services.AddScoped<UserManager<User>>();
+
+
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
