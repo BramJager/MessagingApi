@@ -37,10 +37,10 @@ namespace MessagingApi.Business
             return await _repository.GetAll();
         }
 
-        public async Task<User> GetUserByEmail(string email)
+        public async Task<User> GetUserByUsername(string username)
         {
             var users = await _repository.GetAll();
-            return users.FirstOrDefault(x => x.Email == email);
+            return users.FirstOrDefault(x => x.UserName == username);
         }
 
         public async Task<User> RegisterUser(SignUpInformation info)
@@ -56,7 +56,7 @@ namespace MessagingApi.Business
             PasswordHasher<User> hasher = new();
             newUser.PasswordHash = hasher.HashPassword(newUser, info.Password);
             newUser.Email = info.Mail;
-            newUser.UserName = info.Mail;
+            newUser.UserName = info.Username;
             newUser.FirstName = info.FirstName;
             newUser.Surname = info.LastName;
             await _repository.Add(newUser);
@@ -70,7 +70,7 @@ namespace MessagingApi.Business
         {
             var users = await _repository.GetAll();
 
-            var user = users.FirstOrDefault(x => x.UserName == info.Mail);
+            var user = users.FirstOrDefault(x => x.UserName == info.Username);
 
             return await _userManager.CheckPasswordAsync(user, info.Password) ?  true : false;
         }

@@ -14,6 +14,7 @@ namespace MessagingApi.Domain.Objects
 
         [Required]
         public string Surname { get; set; }
+        public bool Blocked { get; set; } = false;
 
         public ICollection<Group> Groups { get; set; }
     }

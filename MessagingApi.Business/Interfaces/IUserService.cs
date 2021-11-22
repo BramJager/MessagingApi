@@ -10,7 +10,7 @@ namespace MessagingApi.Business.Interfaces
         Task<User> GetUserById(int id);
         Task<IEnumerable<User>> GetUsers();
         Task<User> RegisterUser(SignUpInformation info);
-        Task<User> GetUserByEmail(string email);
+        Task<User> GetUserByUsername(string username);
         string GenerateJWT(User user, List<string> roles);
         Task<List<string>> GetRolesByUser(User user);
 

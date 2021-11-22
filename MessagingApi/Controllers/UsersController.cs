@@ -3,7 +3,6 @@ using MessagingApi.Domain.Objects;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
-using Microsoft.AspNetCore.Identity;
 
 namespace MessagingApi.Controllers
 {
@@ -37,7 +36,7 @@ namespace MessagingApi.Controllers
         {
             if(await _service.ValidateUser(info))
             {
-                var user = await _service.GetUserByEmail(info.Mail);
+                var user = await _service.GetUserByUsername(info.Username);
                 var roles = await _service.GetRolesByUser(user);
                 return Ok(_service.GenerateJWT(user, roles));
             }

@@ -1,9 +1,7 @@
 ﻿using MessagingApi.Business.Data;
 using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MessagingApi.Business
