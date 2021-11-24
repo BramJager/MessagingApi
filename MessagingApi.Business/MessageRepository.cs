@@ -48,9 +48,11 @@ namespace MessagingApi.Business
             await _context.SaveChangesAsync();
         }
 
-        public Task Update(Message entity)
+        public async Task Update(Message entity)
         {
-            throw new System.NotImplementedException();
+            var message = await _context.Messages.FindAsync(entity.MessageId);
+            _context.Entry(message).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }
