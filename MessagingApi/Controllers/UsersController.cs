@@ -3,6 +3,7 @@ using MessagingApi.Domain.Objects;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MessagingApi.Controllers
 {
@@ -34,7 +35,7 @@ namespace MessagingApi.Controllers
         [HttpPost("token")]
         public async Task<ActionResult> LogIn(SignInInformation info)
         {
-            if(await _service.ValidateUser(info))
+            if (await _service.ValidateUser(info))
             {
                 var user = await _service.GetUserByUsername(info.Username);
                 var roles = await _service.GetRolesByUser(user);
@@ -42,7 +43,46 @@ namespace MessagingApi.Controllers
             }
             return BadRequest();
         }
+
+        [HttpGet("list")]
+        [Authorize(Roles = "User, Groupmoderator, Administrator")]
+        public async Task<ActionResult> GetListOfLoggedInUser()
+        {
+            var users = await _service.GetUsers();
+            return Ok(users);
+        }
+
+        [HttpGet]
+        [Route("{userId}/block")]
+        [Authorize(Roles = "Administrator")]
+        public async Task<ActionResult> BlockUserById(int userId)
+        {
+            try
+            {
+                var user = await _service.GetUserById(userId);
+                user.Blocked = true;
+                return Ok(user);
+            }
+            catch (Exception)
+            {
+
+                return BadRequest();
+            }
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "User, Groupmoderator, Administrator")]
+        public async Task<ActionResult> UpdateUser(int userId, SignUpInformation info)
+        {
+            var currentUser = await _service.GetUserById(userId);
+
+            currentUser.Email = info.Mail;
+            currentUser.FirstName = info.FirstName;
+            currentUser.Surname = info.LastName;
+            currentUser.UserName = info.Username;
+
+            await _service.UpdateUser(currentUser, info.Password);
+            return Ok(currentUser);
+        }
     }
-
-
 }

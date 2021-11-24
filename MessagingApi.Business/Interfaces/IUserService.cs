@@ -13,6 +13,7 @@ namespace MessagingApi.Business.Interfaces
         Task<User> GetUserByUsername(string username);
         string GenerateJWT(User user, List<string> roles);
         Task<List<string>> GetRolesByUser(User user);
+        Task<User> UpdateUser(User user, string password);
 
     }
 }

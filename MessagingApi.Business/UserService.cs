@@ -109,5 +109,16 @@ namespace MessagingApi.Business
 
             return (List<string>)roles;
         }
+
+        public async Task<User> UpdateUser(User user, string password)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            await _userManager.ResetPasswordAsync(user, token, password);
+
+            await _userManager.UpdateAsync(user);
+            await _repository.Save();
+            return user;
+        }
     }
 }
