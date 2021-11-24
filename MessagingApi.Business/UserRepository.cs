@@ -55,13 +55,6 @@ namespace MessagingApi.Business
             await _context.SaveChangesAsync();
         }
 
-        public async Task Update(User entity, string changedPassword)
-        {
-            var user = await _context.Users.FindAsync(entity.Id);
-            _context.Entry(user).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
-
         public async Task Update(User entity)
         {
             var user = await _context.Users.FindAsync(entity.Id);

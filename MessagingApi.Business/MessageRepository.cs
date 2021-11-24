@@ -1,6 +1,7 @@
 ﻿using MessagingApi.Business.Data;
 using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,29 +16,36 @@ namespace MessagingApi.Business
             _context = context;
         }
 
-        public Task Add(Message entity)
+        public async Task Add(Message entity)
         {
-            throw new System.NotImplementedException();
+            await _context.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
-        public Task Delete(Message entity)
+        public async Task Delete(Message entity)
         {
-            throw new System.NotImplementedException();
+            _context.Remove(entity);
+            await _context.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<Message>> GetAll()
+        public async Task<IEnumerable<Message>> GetAll()
         {
-            throw new System.NotImplementedException();
+            var messages = await _context.Messages
+                .Include(x => x.Group)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return messages;
         }
 
-        public Task<Message> GetById(int id)
+        public async Task<Message> GetById(int id)
         {
-            throw new System.NotImplementedException();
+            return await _context.Messages.FindAsync(id);
         }
 
-        public Task Save()
+        public async Task Save()
         {
-            throw new System.NotImplementedException();
+            await _context.SaveChangesAsync();
         }
 
         public Task Update(Message entity)

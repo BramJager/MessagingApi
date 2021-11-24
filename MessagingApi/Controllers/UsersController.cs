@@ -65,7 +65,6 @@ namespace MessagingApi.Controllers
             }
             catch (Exception)
             {
-
                 return BadRequest();
             }
         }

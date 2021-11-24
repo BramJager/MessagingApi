@@ -51,8 +51,6 @@ namespace MessagingApi
 
             services.AddScoped<UserManager<User>>();
 
-
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
