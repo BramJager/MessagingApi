@@ -34,6 +34,7 @@ namespace MessagingApi
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
+
             services.AddAuthorization();
 
             services.AddDbContext<DataContext>(options =>

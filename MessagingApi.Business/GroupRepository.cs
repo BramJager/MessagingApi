@@ -32,7 +32,7 @@ namespace MessagingApi.Business
         {
             var groups = await _context.Groups
                 .Include(x => x.Users)
-                .AsNoTracking()
+                .Include(x => x.Messages)
                 .ToListAsync();
 
             return groups;

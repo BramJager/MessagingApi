@@ -45,7 +45,7 @@ namespace MessagingApi.Controllers
         }
 
         [HttpGet("list")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Groupmoderator, Administrator")]
         public async Task<ActionResult> GetListOfLoggedInUser()
         {
             var users = await _service.GetUsers();
