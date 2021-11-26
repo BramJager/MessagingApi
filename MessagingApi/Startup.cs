@@ -27,6 +27,11 @@ namespace MessagingApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddIdentity<User, Role>()
+                .AddEntityFrameworkStores<DataContext>()
+                .AddDefaultTokenProviders();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"));
             services.AddAuthorization();
@@ -34,11 +39,7 @@ namespace MessagingApi
             services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             
-            services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));    
-            
-            services.AddIdentity<User, Role>()
-                .AddEntityFrameworkStores<DataContext>()
-                .AddDefaultTokenProviders();
+            services.Configure<JwtSettings>(Configuration.GetSection("Jwt"));
 
             services.AddScoped<IRepository<User>, UserRepository>();
             //services.AddScoped<IRepository<Group>, GroupRepository>();

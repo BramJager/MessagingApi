@@ -45,7 +45,7 @@ namespace MessagingApi.Controllers
         }
 
         [HttpGet("list")]
-        [Authorize(Roles = "User, Groupmoderator, Administrator")]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult> GetListOfLoggedInUser()
         {
             var users = await _service.GetUsers();
@@ -73,15 +73,20 @@ namespace MessagingApi.Controllers
         [Authorize(Roles = "User, Groupmoderator, Administrator")]
         public async Task<ActionResult> UpdateUser(int userId, SignUpInformation info)
         {
-            var currentUser = await _service.GetUserById(userId);
+            var currentUser = await _service.GetCurrentUserFromHttp(HttpContext);            
+            var checkUser = await _service.GetUserById(userId);
+            if (currentUser == checkUser)
+            {
+                currentUser.Email = info.Mail;
+                currentUser.FirstName = info.FirstName;
+                currentUser.Surname = info.LastName;
+                currentUser.UserName = info.Username;
 
-            currentUser.Email = info.Mail;
-            currentUser.FirstName = info.FirstName;
-            currentUser.Surname = info.LastName;
-            currentUser.UserName = info.Username;
+                await _service.UpdateUser(currentUser, info.Password);
+                return Ok(currentUser);
+            }
 
-            await _service.UpdateUser(currentUser, info.Password);
-            return Ok(currentUser);
+            return BadRequest();
         }
     }
 }

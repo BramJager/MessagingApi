@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MessagingApi.Business.Settings;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http;
 
 namespace MessagingApi.Business
 {
@@ -80,7 +81,7 @@ namespace MessagingApi.Business
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
              };
@@ -119,6 +120,11 @@ namespace MessagingApi.Business
             await _userManager.UpdateAsync(user);
             await _repository.Save();
             return user;
+        }
+
+        public async Task<User> GetCurrentUserFromHttp(HttpContext http)
+        {
+            return await _userManager.GetUserAsync(http.User);
         }
     }
 }
