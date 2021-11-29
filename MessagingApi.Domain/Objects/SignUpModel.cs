@@ -1,6 +1,6 @@
 ﻿namespace MessagingApi.Domain.Objects
 {
-    public class SignUpInformation
+    public class SignUpModel
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

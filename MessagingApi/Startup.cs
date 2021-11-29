@@ -12,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Text;
@@ -63,12 +62,13 @@ namespace MessagingApi
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IRepository<User>, UserRepository>();
-            //services.AddScoped<IRepository<Group>, GroupRepository>();
+            services.AddScoped<IRepository<Group>, GroupRepository>();
             //services.AddScoped<IRepository<Message>, MessageRepository>();
 
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserService, UserService>();            
+            services.AddScoped<IGroupService, GroupService>();
             //services.AddScoped<IMessageService, MessageService>();
-            //services.AddScoped<IGroupService, GroupService>();
+
 
             services.AddScoped<UserManager<User>>();
 

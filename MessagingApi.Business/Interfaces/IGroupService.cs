@@ -10,12 +10,18 @@ namespace MessagingApi.Business.Interfaces
 
         Task<Group> AddUserToGroup(Group group, User user);
 
+        Task<Group> RemoveUserFromGroup(Group group, User user);
+
         Task<Group> GetGroupById(int id);
 
         Task<IEnumerable<Group>> GetGroups();
 
-        List<User> GetUsersOfGroup(Group group);
+        Task<IEnumerable<User>> GetUsersOfGroupById(int groupId);
 
-        Group UpdateGroup(Group group);
+        Task<Group> UpdateGroup(Group group);
+
+        string GetSalt();
+
+        string ComputeHash(string value);
     }
 }

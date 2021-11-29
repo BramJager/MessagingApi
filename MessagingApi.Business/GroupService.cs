@@ -1,6 +1,9 @@
 ﻿using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
+using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MessagingApi.Business
@@ -36,14 +39,42 @@ namespace MessagingApi.Business
             return await _repository.GetAll();
         }
 
-        public List<User> GetUsersOfGroup(Group group)
+        public async Task<IEnumerable<User>> GetUsersOfGroupById(int groupId)
         {
-            return (List<User>)group.Users;
+            var group = await GetGroupById(groupId);
+            return group.Users;
         }
 
-        public Group UpdateGroup(Group group)
+        public async Task<Group> UpdateGroup(Group group)
         {
-            _repository.Update(group);
+            await _repository.Update(group);
+            return group;
+        }
+
+        public string ComputeHash(string value)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(value));
+                var hash = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+                return hash;
+            }
+        }
+
+        public string GetSalt()
+        {
+            byte[] bytes = new byte[128 / 8];
+            using (var keyGenerator = RandomNumberGenerator.Create())
+            {
+                keyGenerator.GetBytes(bytes);
+                return BitConverter.ToString(bytes).Replace("-", "").ToLower();
+            }
+        }
+
+        public async Task<Group> RemoveUserFromGroup(Group group, User user)
+        {
+            group.Users.Remove(user);
+            await _repository.Update(group);
             return group;
         }
     }

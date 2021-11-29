@@ -44,7 +44,7 @@ namespace MessagingApi.Business
             return users.FirstOrDefault(x => x.UserName == username);
         }
 
-        public async Task<User> RegisterUser(SignUpInformation info)
+        public async Task<User> RegisterUser(SignUpModel info)
         {
             var users = await _repository.GetAll();
 
@@ -60,6 +60,7 @@ namespace MessagingApi.Business
             newUser.UserName = info.Username;
             newUser.FirstName = info.FirstName;
             newUser.Surname = info.LastName;
+
             await _repository.Add(newUser);
             await _userManager.UpdateSecurityStampAsync(newUser);
 
@@ -67,7 +68,7 @@ namespace MessagingApi.Business
             return newUser;
         }
 
-        public async Task<bool> ValidateUser(SignInInformation info)
+        public async Task<bool> ValidateUser(SignInModel info)
         {
             var users = await _repository.GetAll();
 
@@ -117,6 +118,13 @@ namespace MessagingApi.Business
 
             await _userManager.ResetPasswordAsync(user, token, password);
 
+            await _userManager.UpdateAsync(user);
+            await _repository.Save();
+            return user;
+        }
+
+        public async Task<User> UpdateUser(User user)
+        {
             await _userManager.UpdateAsync(user);
             await _repository.Save();
             return user;

@@ -19,7 +19,7 @@ namespace MessagingApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Register(SignUpInformation registration)
+        public async Task<ActionResult> Register(SignUpModel registration)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace MessagingApi.Controllers
         }
 
         [HttpPost("token")]
-        public async Task<ActionResult> LogIn(SignInInformation info)
+        public async Task<ActionResult> LogIn(SignInModel info)
         {
             if (await _service.ValidateUser(info))
             {
@@ -48,6 +48,8 @@ namespace MessagingApi.Controllers
         [Authorize(Roles = "User, Groupmoderator, Administrator")]
         public async Task<ActionResult> GetListOfLoggedInUser()
         {
+            var currentUser = await _service.GetCurrentUserFromHttp(HttpContext);
+            if (currentUser == null || currentUser.Blocked == true) return BadRequest("You are currently blocked, contact admin for more information.");
             var users = await _service.GetUsers();
             return Ok(users);
         }
@@ -61,20 +63,22 @@ namespace MessagingApi.Controllers
             {
                 var user = await _service.GetUserById(userId);
                 user.Blocked = true;
+                await _service.UpdateUser(user);
                 return Ok(user);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
         }
 
         [HttpPut]
         [Authorize(Roles = "User, Groupmoderator, Administrator")]
-        public async Task<ActionResult> UpdateUser(int userId, SignUpInformation info)
+        public async Task<ActionResult> UpdateUser(int userId, SignUpModel info)
         {
             var currentUser = await _service.GetCurrentUserFromHttp(HttpContext);            
             var checkUser = await _service.GetUserById(userId);
+            if (currentUser == null || currentUser.Blocked == true) return BadRequest("You are currently blocked, contact admin for more information.");
             if (currentUser == checkUser)
             {
                 currentUser.Email = info.Mail;
@@ -86,7 +90,7 @@ namespace MessagingApi.Controllers
                 return Ok(currentUser);
             }
 
-            return BadRequest();
+            return BadRequest("You requested to update a different user, please do not do that.");
         }
     }
 }
