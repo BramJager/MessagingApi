@@ -1,5 +1,6 @@
 ﻿using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
+using MessagingApi.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -23,106 +24,128 @@ namespace MessagingApi.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateGroup(GroupModel model)
         {
-            var group = new Group();
-            group.Name = model.Name;
-            group.MaxUsers = model.MaxUsers;
-            group.Visibility = model.Visibility;
-            if (group.Visibility == Visibility.Private)
+            try
             {
-                if (!string.IsNullOrEmpty(model.Password))
+                var group = new Group();
+                group.Name = model.Name;
+                group.MaxUsers = model.MaxUsers;
+                group.Visibility = model.Visibility;
+                if (group.Visibility == Visibility.Private)
                 {
-                    group.Salt = _groupService.GetSalt();
-                    group.PasswordHash = _groupService.ComputeHash(model.Password + group.Salt);
+                    if (!string.IsNullOrEmpty(model.Password))
+                    {
+                        group.Salt = _groupService.GetSalt();
+                        group.PasswordHash = _groupService.ComputeHash(model.Password + group.Salt);
+                    }
+
+                    else
+                    {
+                        throw new ArgumentNullException(nameof(model.Password));
+                    }
                 }
 
-                else
-                {
-                    return BadRequest("A private chat needs a password, please provide.");
-                }
+                await _groupService.CreateGroup(group);
+                return Ok(group);
             }
-
-            else
+            catch (Exception e)
             {
-                group.PasswordHash = null;
+                return BadRequest(e.Message);
             }
 
-            await _groupService.CreateGroup(group);
-            return Ok(group);
         }
 
         [HttpPost]
         [Route("join")]
         [Authorize]
-        public async Task<ActionResult> InviteUserOrJoinGroup(int userId, int groupId, string message, string password)
+        public async Task<ActionResult> InviteUserOrJoinGroup(JoinModel model)
         {
-            var currentUser = await _userService.GetCurrentUserFromHttp(HttpContext);
-            var roles = await _userService.GetRolesByUser(currentUser);
-            var user = await _userService.GetUserById(userId);
-            var group = await _groupService.GetGroupById(groupId);
-
-            if(currentUser.Id == userId) 
+            try
             {
-                if (group.Visibility == Visibility.Public)
+                var currentUser = await _userService.GetCurrentUserFromHttp(HttpContext);
+                var roles = await _userService.GetRolesByUser(currentUser);
+                var user = await _userService.GetUserById(model.UserId);
+                var group = await _groupService.GetGroupById(model.GroupId);
+
+                if (currentUser.Id == model.UserId)
                 {
-                    await _groupService.AddUserToGroup(group, currentUser);
-                    return Ok();
-                }
-                else
-                {
-                    if (group.PasswordHash == _groupService.ComputeHash(password + group.Salt))
+                    if (group.Visibility == Visibility.Public)
                     {
                         await _groupService.AddUserToGroup(group, currentUser);
                         return Ok();
                     }
-                    
-                    return BadRequest($"Enter the correct password to join {group.Name}.");
+                    else
+                    {
+                        if (group.PasswordHash == _groupService.ComputeHash(model.Password + group.Salt))
+                        {
+                            await _groupService.AddUserToGroup(group, currentUser);
+                            return Ok();
+                        }
+
+                        throw new ArgumentException(nameof(model.Password));
+                    }
                 }
+
+                if (roles.Contains("Administrator") || roles.Contains("Groupmoderator"))
+                {
+                    return Ok(model.Message);
+                }
+
+                throw new UnauthorizedAccessException();
             }
 
-            if (roles.Contains("Administrator") || roles.Contains("Groupmoderator"))
+            catch (Exception e)
             {
-                Ok(message);
+                return BadRequest(e.Message);
             }
-
-            return BadRequest($"You are not authorized to add {user.UserName} to {group.Name}.");
         }
 
         [HttpDelete]
         [Route("remove")]
         [Authorize]
-        public async Task<ActionResult> RemoveUserFromGroup(int userId, int groupId)
+        public async Task<ActionResult> RemoveUserFromGroup(RemoveUserFromGroupModel model)
         {
-            var currentUser = await _userService.GetCurrentUserFromHttp(HttpContext);
-            var roles = await _userService.GetRolesByUser(currentUser);
-            var group = await _groupService.GetGroupById(groupId);
-
-            if (currentUser.Id == userId)
+            try
             {
-                await _groupService.RemoveUserFromGroup(group, currentUser);
-                return Ok();
+                var currentUser = await _userService.GetCurrentUserFromHttp(HttpContext);
+                var roles = await _userService.GetRolesByUser(currentUser);
+                var group = await _groupService.GetGroupById(model.GroupId);
+
+                if (currentUser.Id == model.UserId)
+                {
+                    await _groupService.RemoveUserFromGroup(group, currentUser);
+                    return Ok();
+                }
+
+                if (roles.Contains("Administrator") || roles.Contains("Groupmoderator"))
+                {
+                    var user = await _userService.GetUserById(model.UserId);
+                    await _groupService.RemoveUserFromGroup(group, user);
+                    return Ok();
+                }
+
+                throw new UnauthorizedAccessException();
             }
 
-            if (roles.Contains("Administrator") || roles.Contains("Groupmoderator"))
+            catch(Exception e)
             {
-                var user = await _userService.GetUserById(userId);
-                await _groupService.RemoveUserFromGroup(group, user);
+                return BadRequest(e.Message);
             }
-
-            return BadRequest();
         }
 
         [HttpDelete]
         [Route("{groupId}/remove")]
         [Authorize(Roles = "Groupmoderator, Administrator")]
         public async Task<ActionResult> RemoveGroup(int groupId)
-        {;
-            var group = await _groupService.GetGroupById(groupId);
+        {
             try
             {
+                var group = await _groupService.GetGroupById(groupId);
+
                 group.Removed = true;
                 await _groupService.UpdateGroup(group);
                 return Ok();
             }
+
             catch (Exception e)
             {
                 return BadRequest(e.Message);

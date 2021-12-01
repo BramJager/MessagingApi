@@ -2,8 +2,10 @@
 using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace MessagingApi.Business
@@ -60,6 +62,11 @@ namespace MessagingApi.Business
             var user = await _context.Users.FindAsync(entity.Id);
             _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+        }
+
+        public Task<IEnumerable<User>> Search(Expression<Func<User, bool>> predicate)
+        {
+            throw new NotImplementedException();
         }
     }
 }

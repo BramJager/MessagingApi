@@ -1,8 +1,10 @@
 ﻿using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
+using MessagingApi.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
+using System.Security.Authentication;
 using Microsoft.AspNetCore.Authorization;
 
 namespace MessagingApi.Controllers
@@ -26,32 +28,54 @@ namespace MessagingApi.Controllers
                 User user = await _service.RegisterUser(registration);
                 return Ok(user);
             }
-            catch (Exception)
+
+            catch (Exception e)
             {
-                return new BadRequestResult();
+                if (e.InnerException != null)
+                {
+                    return BadRequest(e.InnerException.Message);
+                }
+
+                return BadRequest(e.Message);
             }
         }
 
         [HttpPost("token")]
         public async Task<ActionResult> LogIn(SignInModel info)
         {
-            if (await _service.ValidateUser(info))
+            try
             {
-                var user = await _service.GetUserByUsername(info.Username);
-                var roles = await _service.GetRolesByUser(user);
-                return Ok(_service.GenerateJWT(user, roles));
+                if (await _service.ValidateUser(info))
+                {
+                    var user = await _service.GetUserByUsername(info.Username);
+                    var roles = await _service.GetRolesByUser(user);
+                    return Ok(_service.GenerateJWT(user, roles));
+                }
+                throw new InvalidCredentialException();
             }
-            return BadRequest();
+
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpGet("list")]
         [Authorize(Roles = "User, Groupmoderator, Administrator")]
         public async Task<ActionResult> GetListOfLoggedInUser()
         {
-            var currentUser = await _service.GetCurrentUserFromHttp(HttpContext);
-            if (currentUser == null || currentUser.Blocked == true) return BadRequest("You are currently blocked, contact admin for more information.");
-            var users = await _service.GetUsers();
-            return Ok(users);
+            try
+            {
+                var currentUser = await _service.GetCurrentUserFromHttp(HttpContext);
+                if (currentUser.Blocked == true) throw new AccessViolationException("You are currently blocked, contact the admin for more information.");
+                var users = await _service.GetUsers();
+                return Ok(users);
+            }
+
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpGet]
@@ -66,6 +90,7 @@ namespace MessagingApi.Controllers
                 await _service.UpdateUser(user);
                 return Ok(user);
             }
+
             catch (Exception e)
             {
                 return BadRequest(e.Message);
@@ -76,21 +101,30 @@ namespace MessagingApi.Controllers
         [Authorize(Roles = "User, Groupmoderator, Administrator")]
         public async Task<ActionResult> UpdateUser(int userId, SignUpModel info)
         {
-            var currentUser = await _service.GetCurrentUserFromHttp(HttpContext);            
-            var checkUser = await _service.GetUserById(userId);
-            if (currentUser == null || currentUser.Blocked == true) return BadRequest("You are currently blocked, contact admin for more information.");
-            if (currentUser == checkUser)
+            try
             {
-                currentUser.Email = info.Mail;
-                currentUser.FirstName = info.FirstName;
-                currentUser.Surname = info.LastName;
-                currentUser.UserName = info.Username;
+                var currentUser = await _service.GetCurrentUserFromHttp(HttpContext);
+                var checkUser = await _service.GetUserById(userId);
 
-                await _service.UpdateUser(currentUser, info.Password);
-                return Ok(currentUser);
+                if (currentUser == null || currentUser.Blocked == true) throw new AccessViolationException("You are currently blocked, contact the admin for more information.");
+                if (currentUser == checkUser)
+                {
+                    currentUser.Email = info.Mail;
+                    currentUser.FirstName = info.FirstName;
+                    currentUser.Surname = info.LastName;
+                    currentUser.UserName = info.Username;
+
+                    await _service.UpdateUser(currentUser, info.Password);
+                    return Ok(currentUser);
+                }
+
+                throw new UnauthorizedAccessException();
             }
 
-            return BadRequest("You requested to update a different user, please do not do that.");
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿using MessagingApi.Domain.Objects;
+﻿using MessagingApi.Business;
+using MessagingApi.Domain.Models;
+using MessagingApi.Domain.Objects;
+using Moq;
 using Xunit;
 
 namespace MessagingApi.Test
@@ -50,16 +53,14 @@ namespace MessagingApi.Test
         }
 
         [Fact]
-        public void Should_ThrowSQLException_When_UsernameUserIsNotUnique()
+        public void Should_ThrowException_When_UsernameUserIsNotUnique()
         {
             //Arrange
-            User user = new User() { Id = 1, UserName = "henkie"};
 
             //Act
-            //Action action = () => RegisterUser(new User{ Id = 2, UserName = "henkie", Email = "test@test.nl", PasswordHash = "heo230htwvpfbaw"});
 
             //Assert
-            //Assert.Throws<SqlException>(action);
+
         }
 
         [Fact]
@@ -72,7 +73,5 @@ namespace MessagingApi.Test
             //Assert
             
         }
-
-
     }
 }

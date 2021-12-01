@@ -1,7 +1,11 @@
 ﻿using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
+using MessagingApi.Domain.Models;
+using MessagingApi.Business.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,9 +13,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using MessagingApi.Business.Settings;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Http;
 
 namespace MessagingApi.Business
 {
@@ -46,13 +47,6 @@ namespace MessagingApi.Business
 
         public async Task<User> RegisterUser(SignUpModel info)
         {
-            var users = await _repository.GetAll();
-
-            if (users.Any(x => x.Email == info.Mail))
-            {
-                throw new Exception("Email already has an account");
-            }
-
             User newUser = new();
             PasswordHasher<User> hasher = new();
             newUser.PasswordHash = hasher.HashPassword(newUser, info.Password);
@@ -73,8 +67,10 @@ namespace MessagingApi.Business
             var users = await _repository.GetAll();
 
             var user = users.FirstOrDefault(x => x.UserName == info.Username);
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            if (user.Blocked == true) throw new AccessViolationException("You are currently blocked, contact the admin for more information.");
 
-            return await _userManager.CheckPasswordAsync(user, info.Password) ?  true : false;
+            return await _userManager.CheckPasswordAsync(user, info.Password);
         }
 
         public string GenerateJWT(User user, List<string> roles)
@@ -119,6 +115,7 @@ namespace MessagingApi.Business
             await _userManager.ResetPasswordAsync(user, token, password);
 
             await _userManager.UpdateAsync(user);
+            await _userManager.UpdateSecurityStampAsync(user);
             await _repository.Save();
             return user;
         }
@@ -126,6 +123,7 @@ namespace MessagingApi.Business
         public async Task<User> UpdateUser(User user)
         {
             await _userManager.UpdateAsync(user);
+            await _userManager.UpdateSecurityStampAsync(user);
             await _repository.Save();
             return user;
         }

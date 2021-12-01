@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace MessagingApi.Business.Interfaces
@@ -11,6 +13,7 @@ namespace MessagingApi.Business.Interfaces
         Task Add(TEntity entity);
         Task Delete(TEntity entity);
         Task Save();
+        Task<IEnumerable<TEntity>> Search(Expression<Func<TEntity, bool>> predicate);
 
     }
 }

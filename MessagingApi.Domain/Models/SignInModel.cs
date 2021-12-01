@@ -1,4 +1,4 @@
-﻿namespace MessagingApi.Domain.Objects
+﻿namespace MessagingApi.Domain.Models
 {
     public class SignInModel
     {

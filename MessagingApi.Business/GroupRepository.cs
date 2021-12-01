@@ -2,7 +2,9 @@
 using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace MessagingApi.Business
@@ -46,6 +48,11 @@ namespace MessagingApi.Business
         public async Task Save()
         {
             await _context.SaveChangesAsync();
+        }
+
+        public Task<IEnumerable<Group>> Search(Expression<Func<Group, bool>> predicate)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task Update(Group entity)

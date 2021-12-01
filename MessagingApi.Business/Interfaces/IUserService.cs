@@ -1,4 +1,5 @@
 ﻿using MessagingApi.Domain.Objects;
+using MessagingApi.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
