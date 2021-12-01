@@ -1,7 +1,11 @@
 ﻿using MessagingApi.Business;
+using MessagingApi.Business.Settings;
 using MessagingApi.Domain.Models;
 using MessagingApi.Domain.Objects;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Moq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace MessagingApi.Test
@@ -13,7 +17,7 @@ namespace MessagingApi.Test
         {
             //Arrange
 
-            //Act
+            //Act       
 
             //Assert
 

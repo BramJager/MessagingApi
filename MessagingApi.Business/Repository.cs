@@ -1,6 +1,5 @@
 ﻿using MessagingApi.Business.Data;
 using MessagingApi.Business.Interfaces;
-using MessagingApi.Domain.Objects;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,40 +8,37 @@ using System.Threading.Tasks;
 
 namespace MessagingApi.Business
 {
-    public class GroupRepository : IRepository<Group>
+    public class Repository<T> : IRepository<T> where T : class
     {
         private readonly DataContext _context;
+        private DbSet<T> _dbSet;
 
-        public GroupRepository(DataContext context)
+        public Repository(DataContext context)
         {
             _context = context;
+            _dbSet = _context.Set<T>();
         }
 
-        public async Task Add(Group entity)
+        public async Task Add(T entity)
         {
             await _context.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(Group entity)
+        public async Task Delete(T entity)
         {
             _context.Remove(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Group>> GetAll()
+        public async Task<IEnumerable<T>> GetAll()
         {
-            var groups = await _context.Groups
-                .Include(x => x.Users)
-                .Include(x => x.Messages)
-                .ToListAsync();
-
-            return groups;
+            return await _dbSet.ToListAsync();
         }
 
-        public async Task<Group> GetById(int id)
+        public async Task<T> GetById(int id)
         {
-            return await _context.Groups.FindAsync(id);
+            return await _dbSet.FindAsync(id);
         }
 
         public async Task Save()
@@ -50,15 +46,15 @@ namespace MessagingApi.Business
             await _context.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<Group>> Search(Expression<Func<Group, bool>> predicate)
+        public Task<IEnumerable<T>> Search(Expression<Func<T, bool>> predicate)
         {
             throw new NotImplementedException();
         }
 
-        public async Task Update(Group entity)
+        public async Task Update(T entity)
         {
-            var group = await _context.Messages.FindAsync(entity.GroupId);
-            _context.Entry(group).State = EntityState.Modified;
+            _dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
     }

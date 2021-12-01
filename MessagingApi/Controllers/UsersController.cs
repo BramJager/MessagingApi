@@ -26,7 +26,7 @@ namespace MessagingApi.Controllers
             try
             {
                 User user = await _service.RegisterUser(registration);
-                return Ok(user);
+                return Ok();
             }
 
             catch (Exception e)

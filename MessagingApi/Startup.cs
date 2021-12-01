@@ -61,9 +61,9 @@ namespace MessagingApi
             services.AddDbContext<DataContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddScoped<IRepository<User>, UserRepository>();
-            services.AddScoped<IRepository<Group>, GroupRepository>();
-            //services.AddScoped<IRepository<Message>, MessageRepository>();
+            services.AddScoped<IRepository<User>, Repository<User>>();
+            services.AddScoped<IRepository<Group>, Repository<Group>>();
+            //services.AddScoped<IRepository<Message>, Repository<Message>>();
 
             services.AddScoped<IUserService, UserService>();            
             services.AddScoped<IGroupService, GroupService>();

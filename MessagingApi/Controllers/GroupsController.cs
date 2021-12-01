@@ -87,7 +87,8 @@ namespace MessagingApi.Controllers
 
                 if (roles.Contains("Administrator") || roles.Contains("Groupmoderator"))
                 {
-                    return Ok(model.Message);
+
+                    throw new NotImplementedException();
                 }
 
                 throw new UnauthorizedAccessException();
