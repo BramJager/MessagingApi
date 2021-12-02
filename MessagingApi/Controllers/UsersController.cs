@@ -111,13 +111,10 @@ namespace MessagingApi.Controllers
                 if (currentUser == null || currentUser.Blocked == true) throw new AccessViolationException("You are currently blocked, contact the admin for more information.");
                 if (currentUser == checkUser)
                 {
-                    currentUser.Email = info.Email;
-                    currentUser.FirstName = info.FirstName;
-                    currentUser.Surname = info.Surname;
-                    currentUser.UserName = info.Username;
+                    currentUser = checkUser;
 
                     await _service.UpdateUser(currentUser, info.Password);
-                    return Ok(currentUser);
+                    return Ok();
                 }
 
                 throw new UnauthorizedAccessException();
