@@ -1,4 +1,6 @@
-﻿namespace MessagingApi.Domain.Objects
+﻿using MessagingApi.Domain.Objects;
+
+namespace MessagingApi.Models
 {
     public class GroupModel
     {

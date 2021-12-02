@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MessagingApi.Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessagingApi.Controllers
@@ -7,6 +7,18 @@ namespace MessagingApi.Controllers
     [ApiController]
     public class MessagesController : ControllerBase
     {
+        private readonly IMessageService _service;
 
+        public MessagesController(IMessageService service)
+        {
+            _service = service;
+        }
+
+        //[HttpGet]
+        //[Authorize(Roles = "User, Groupmoderator, Administrator")]
+        //public async Task<ActionResult> GetListOfLoggedInUser(int page, int type, int typeId)
+        //{
+        //
+        //}
     }
 }

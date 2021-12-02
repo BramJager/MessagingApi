@@ -1,6 +1,5 @@
 ﻿using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
-using MessagingApi.Domain.Models;
 using MessagingApi.Business.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -13,64 +12,50 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace MessagingApi.Business
 {
     public class UserService : IUserService
     {
-        private readonly IRepository<User> _repository;
         private readonly UserManager<User> _userManager;
         private readonly JwtSettings _jwtSettings;
 
-        public UserService(IRepository<User> repository, UserManager<User> userManager, IOptionsSnapshot<JwtSettings> jwtSettings)
+        public UserService(UserManager<User> userManager, IOptionsSnapshot<JwtSettings> jwtSettings)
         {
-            _repository = repository;
             _userManager = userManager;
             _jwtSettings = jwtSettings.Value;
         }
 
         public async Task<User> GetUserById(int id)
         {
-            return await _repository.GetById(id);
+            return await _userManager.FindByIdAsync(id.ToString());
         }
 
         public async Task<IEnumerable<User>> GetUsers()
         {
-            return await _repository.GetAll();
+            return await _userManager.Users.ToListAsync();
         }
 
         public async Task<User> GetUserByUsername(string username)
         {
-            var users = await _repository.GetAll();
-            return users.FirstOrDefault(x => x.UserName == username);
+            return await _userManager.FindByNameAsync(username);
         }
 
-        public async Task<User> RegisterUser(SignUpModel info)
+        public async Task RegisterUser(User user, string password)
         {
-            User newUser = new();
-            PasswordHasher<User> hasher = new();
-            newUser.PasswordHash = hasher.HashPassword(newUser, info.Password);
-            newUser.Email = info.Mail;
-            newUser.UserName = info.Username;
-            newUser.FirstName = info.FirstName;
-            newUser.Surname = info.LastName;
-
-            await _repository.Add(newUser);
-            await _userManager.UpdateSecurityStampAsync(newUser);
-
-            await _userManager.AddToRoleAsync(newUser, "User");
-            return newUser;
+            await _userManager.CreateAsync(user, password);
+            await _userManager.UpdateSecurityStampAsync(user);
+            await _userManager.AddToRoleAsync(user, "User");
         }
 
-        public async Task<bool> ValidateUser(SignInModel info)
+        public async Task<bool> CheckLogin(string username, string password)
         {
-            var users = await _repository.GetAll();
-
-            var user = users.FirstOrDefault(x => x.UserName == info.Username);
+            var user = await _userManager.FindByNameAsync(username);
             if (user == null) throw new ArgumentNullException(nameof(user));
             if (user.Blocked == true) throw new AccessViolationException("You are currently blocked, contact the admin for more information.");
-
-            return await _userManager.CheckPasswordAsync(user, info.Password);
+            
+            return await _userManager.CheckPasswordAsync(user, password);
         }
 
         public string GenerateJWT(User user, List<string> roles)
@@ -108,7 +93,7 @@ namespace MessagingApi.Business
             return (List<string>)roles;
         }
 
-        public async Task<User> UpdateUser(User user, string password)
+        public async Task UpdateUser(User user, string password)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
@@ -116,21 +101,24 @@ namespace MessagingApi.Business
 
             await _userManager.UpdateAsync(user);
             await _userManager.UpdateSecurityStampAsync(user);
-            await _repository.Save();
-            return user;
         }
 
-        public async Task<User> UpdateUser(User user)
+        public async Task UpdateUser(User user)
         {
             await _userManager.UpdateAsync(user);
             await _userManager.UpdateSecurityStampAsync(user);
-            await _repository.Save();
-            return user;
         }
 
         public async Task<User> GetCurrentUserFromHttp(HttpContext http)
         {
             return await _userManager.GetUserAsync(http.User);
+        }
+
+        public async Task BlockUserById(int id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            user.Blocked = true;
+            await _userManager.UpdateAsync(user);
         }
     }
 }

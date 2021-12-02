@@ -1,10 +1,11 @@
 ﻿using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
-using MessagingApi.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using AutoMapper;
+using MessagingApi.Models;
 
 namespace MessagingApi.Controllers
 {
@@ -14,11 +15,13 @@ namespace MessagingApi.Controllers
     {
         private readonly IGroupService _groupService;
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public GroupsController(IGroupService groupService, IUserService userService)
+        public GroupsController(IGroupService groupService, IUserService userService, IMapper mapper)
         {
             _groupService = groupService;
             _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -26,10 +29,7 @@ namespace MessagingApi.Controllers
         {
             try
             {
-                var group = new Group();
-                group.Name = model.Name;
-                group.MaxUsers = model.MaxUsers;
-                group.Visibility = model.Visibility;
+                var group = _mapper.Map<Group>(model);
                 if (group.Visibility == Visibility.Private)
                 {
                     if (!string.IsNullOrEmpty(model.Password))

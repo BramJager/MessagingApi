@@ -1,11 +1,12 @@
 ﻿using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
-using MessagingApi.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
+using MessagingApi.Models;
 
 namespace MessagingApi.Controllers
 {
@@ -14,10 +15,12 @@ namespace MessagingApi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _service;
+        private readonly IMapper _mapper;
 
-        public UsersController(IUserService service)
+        public UsersController(IUserService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -25,7 +28,8 @@ namespace MessagingApi.Controllers
         {
             try
             {
-                User user = await _service.RegisterUser(registration);
+                User user = _mapper.Map<User>(registration);
+                await _service.RegisterUser(user, registration.Password);
                 return Ok();
             }
 
@@ -45,7 +49,7 @@ namespace MessagingApi.Controllers
         {
             try
             {
-                if (await _service.ValidateUser(info))
+                if (await _service.CheckLogin(info.Username, info.Password))
                 {
                     var user = await _service.GetUserByUsername(info.Username);
                     var roles = await _service.GetRolesByUser(user);
@@ -85,10 +89,8 @@ namespace MessagingApi.Controllers
         {
             try
             {
-                var user = await _service.GetUserById(userId);
-                user.Blocked = true;
-                await _service.UpdateUser(user);
-                return Ok(user);
+                await _service.BlockUserById(userId);
+                return Ok();
             }
 
             catch (Exception e)
@@ -109,9 +111,9 @@ namespace MessagingApi.Controllers
                 if (currentUser == null || currentUser.Blocked == true) throw new AccessViolationException("You are currently blocked, contact the admin for more information.");
                 if (currentUser == checkUser)
                 {
-                    currentUser.Email = info.Mail;
+                    currentUser.Email = info.Email;
                     currentUser.FirstName = info.FirstName;
-                    currentUser.Surname = info.LastName;
+                    currentUser.Surname = info.Surname;
                     currentUser.UserName = info.Username;
 
                     await _service.UpdateUser(currentUser, info.Password);

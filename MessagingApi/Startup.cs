@@ -61,13 +61,14 @@ namespace MessagingApi
             services.AddDbContext<DataContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddScoped<IRepository<User>, Repository<User>>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             services.AddScoped<IRepository<Group>, Repository<Group>>();
-            //services.AddScoped<IRepository<Message>, Repository<Message>>();
+            services.AddScoped<IRepository<Message>, Repository<Message>>();
 
             services.AddScoped<IUserService, UserService>();            
             services.AddScoped<IGroupService, GroupService>();
-            //services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IMessageService, MessageService>();
 
 
             services.AddScoped<UserManager<User>>();
@@ -79,7 +80,6 @@ namespace MessagingApi
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
