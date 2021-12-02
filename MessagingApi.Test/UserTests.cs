@@ -17,40 +17,54 @@ namespace MessagingApi.Test
         {
             //Arrange
 
-            //Act       
+
+            //Act
+
 
             //Assert
 
         }
 
-        [Fact]
-        public void Should_ThrowException_When_NameIsEmptyOrNull()
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Should_ThrowException_When_NameIsEmptyOrNull(string name)
         {
             //Arrange
 
+
             //Act
+
 
             //Assert
 
         }
 
-        [Fact]
-        public void Should_ThrowException_When_UserNameIsEmptyOrNull()
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Should_ThrowException_When_UserNameIsEmptyOrNull(string username)
         {
             //Arrange
 
+
             //Act
+
 
             //Assert
 
         }
 
-        [Fact]
-        public void Should_ThrowException_When_EmailAdressIsEmptyOrNull()
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void Should_ThrowException_When_EmailAdressIsEmptyOrNull(string email)
         {
             //Arrange
 
+
             //Act
+
 
             //Assert
 
@@ -61,7 +75,9 @@ namespace MessagingApi.Test
         {
             //Arrange
 
+
             //Act
+
 
             //Assert
 
@@ -72,7 +88,9 @@ namespace MessagingApi.Test
         {
             //Arrange
 
+
             //Act
+
 
             //Assert
             

@@ -3,6 +3,7 @@ using MessagingApi.Business.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -46,9 +47,9 @@ namespace MessagingApi.Business
             await _context.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<T>> Search(Expression<Func<T, bool>> predicate)
+        public async Task<IEnumerable<T>> Search(Expression<Func<T, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _dbSet.Where(predicate).ToListAsync();
         }
 
         public async Task Update(T entity)
