@@ -11,6 +11,7 @@ namespace MessagingApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class GroupsController : ControllerBase
     {
         private readonly IGroupService _groupService;
@@ -45,7 +46,7 @@ namespace MessagingApi.Controllers
                 }
 
                 await _groupService.CreateGroup(group);
-                return Ok(group);
+                return Ok();
             }
             catch (Exception e)
             {
@@ -56,7 +57,6 @@ namespace MessagingApi.Controllers
 
         [HttpPost]
         [Route("join")]
-        [Authorize]
         public async Task<ActionResult> InviteUserOrJoinGroup(JoinModel model)
         {
             try
@@ -102,7 +102,6 @@ namespace MessagingApi.Controllers
 
         [HttpDelete]
         [Route("remove")]
-        [Authorize]
         public async Task<ActionResult> RemoveUserFromGroup(RemoveUserFromGroupModel model)
         {
             try
@@ -143,6 +142,7 @@ namespace MessagingApi.Controllers
                 var group = await _groupService.GetGroupById(groupId);
 
                 group.Removed = true;
+
                 await _groupService.UpdateGroup(group);
                 return Ok();
             }

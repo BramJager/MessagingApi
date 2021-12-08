@@ -51,10 +51,9 @@ namespace MessagingApi.Controllers
             {
                 if (await _service.CheckLogin(info.Username, info.Password))
                 {
-                    var user = await _service.GetUserByUsername(info.Username);
-                    var roles = await _service.GetRolesByUser(user);
-                    return Ok(_service.GenerateJWT(user, roles));
+                    return Ok(await _service.GenerateJWTForUsername(info.Username));
                 }
+
                 throw new InvalidCredentialException();
             }
 
@@ -101,23 +100,19 @@ namespace MessagingApi.Controllers
 
         [HttpPut]
         [Authorize(Roles = "User, Groupmoderator, Administrator")]
-        public async Task<ActionResult> UpdateUser(int userId, SignUpModel info)
+        public async Task<ActionResult> UpdateUser(SignUpModel model)
         {
             try
             {
                 var currentUser = await _service.GetCurrentUserFromHttp(HttpContext);
-                var checkUser = await _service.GetUserById(userId);
 
-                if (currentUser == null || currentUser.Blocked == true) throw new AccessViolationException("You are currently blocked, contact the admin for more information.");
-                if (currentUser == checkUser)
-                {
-                    currentUser = checkUser;
+                if (currentUser == null || currentUser.Blocked == true) throw new AccessViolationException("You are currently blocked, contact the admin for more information.");    
 
-                    await _service.UpdateUser(currentUser, info.Password);
-                    return Ok();
-                }
+                _mapper.Map(model, currentUser);
 
-                throw new UnauthorizedAccessException();
+                await _service.UpdateUser(currentUser, model.Password);
+
+                return Ok();
             }
 
             catch (Exception e)

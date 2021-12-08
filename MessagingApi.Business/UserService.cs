@@ -27,6 +27,16 @@ namespace MessagingApi.Business
             _jwtSettings = jwtSettings.Value;
         }
 
+        public async Task ValidateUserForRegistration(User user)
+        {
+            if (user.Email.IsNullOrEmpty()) throw new ArgumentException(nameof(user.Email));
+            if (user.UserName.IsNullOrEmpty()) throw new ArgumentException(nameof(user.UserName));
+            if (user.FirstName.IsNullOrEmpty() || user.Surname.IsNullOrEmpty()) throw new ArgumentException(nameof(user.Name));
+
+            if (await _userManager.FindByNameAsync(user.UserName) != null) throw new ArgumentException("This username already exists.");
+            if (await _userManager.FindByEmailAsync(user.Email) != null) throw new ArgumentException("This email already has an account.");
+        }
+
         public async Task<User> GetUserById(int id)
         {
             return await _userManager.FindByIdAsync(id.ToString());
@@ -44,9 +54,19 @@ namespace MessagingApi.Business
 
         public async Task RegisterUser(User user, string password)
         {
-            await _userManager.CreateAsync(user, password);
-            await _userManager.UpdateSecurityStampAsync(user);
-            await _userManager.AddToRoleAsync(user, "User");
+            try
+            {
+                await ValidateUserForRegistration(user);
+                if (password.IsNullOrEmpty()) throw new ArgumentException("The password cannot be null or empty.");
+                await _userManager.CreateAsync(user, password);
+                await _userManager.UpdateSecurityStampAsync(user);
+                await _userManager.AddToRoleAsync(user, "User");
+            }
+
+            catch 
+            { 
+                throw; 
+            }
         }
 
         public async Task<bool> CheckLogin(string username, string password)
@@ -119,6 +139,14 @@ namespace MessagingApi.Business
             var user = await _userManager.FindByIdAsync(id.ToString());
             user.Blocked = true;
             await _userManager.UpdateAsync(user);
+        }
+
+        public async Task<string> GenerateJWTForUsername(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return GenerateJWT(user, roles.ToList());
         }
     }
 }
