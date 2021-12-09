@@ -31,6 +31,7 @@ namespace MessagingApi.Controllers
             try
             {
                 var group = _mapper.Map<Group>(model);
+                
                 if (group.Visibility == Visibility.Private)
                 {
                     if (!string.IsNullOrEmpty(model.Password))

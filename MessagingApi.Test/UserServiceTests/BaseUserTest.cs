@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Moq;
 
-namespace MessagingApi.Test.UserTests
+namespace MessagingApi.Test.UserServiceTests
 {
     public class BaseUserTest
     {
@@ -19,11 +19,12 @@ namespace MessagingApi.Test.UserTests
             options = new JwtSettings()
             {
                 Issuer = "issuer",
-                Secret = "secret",
+                Secret = "Supersecretstuffthisneedstobelongenough",
                 ExpirationInMinutes = 60
             };
 
             mockOptions = new Mock<IOptionsSnapshot<JwtSettings>>();
+            mockOptions.Setup(x => x.Value).Returns(options);
             mockManager = new Mock<UserManager<User>>(new Mock<IUserStore<User>>().Object, null, null, null, null, null, null, null, null);
             service = new UserService(mockManager.Object, mockOptions.Object);
         }

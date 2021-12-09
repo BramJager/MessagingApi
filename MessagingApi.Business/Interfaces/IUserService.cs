@@ -16,7 +16,6 @@ namespace MessagingApi.Business.Interfaces
         string GenerateJWT(User user, List<string> roles);
         Task<List<string>> GetRolesByUser(User user);
         Task UpdateUser(User user, string password);
-        Task UpdateUser(User user);
         Task BlockUserById(int id);
         Task<User> GetCurrentUserFromHttp(HttpContext http);
 

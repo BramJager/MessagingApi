@@ -115,16 +115,12 @@ namespace MessagingApi.Business
 
         public async Task UpdateUser(User user, string password)
         {
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            if (!password.IsNullOrEmpty())
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                await _userManager.ResetPasswordAsync(user, token, password);
+            }
 
-            await _userManager.ResetPasswordAsync(user, token, password);
-
-            await _userManager.UpdateAsync(user);
-            await _userManager.UpdateSecurityStampAsync(user);
-        }
-
-        public async Task UpdateUser(User user)
-        {
             await _userManager.UpdateAsync(user);
             await _userManager.UpdateSecurityStampAsync(user);
         }

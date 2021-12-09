@@ -19,6 +19,7 @@ namespace MessagingApi.Business
 
         public async Task CreateGroup(Group group)
         {
+            if (group.Visibility == Visibility.Private && string.IsNullOrEmpty(group.PasswordHash)) throw new ArgumentException("Password is required for private group.");
             await _repository.Add(group);
         }
 

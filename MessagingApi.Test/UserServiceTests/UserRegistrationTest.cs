@@ -5,13 +5,11 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace MessagingApi.Test.UserTests
+namespace MessagingApi.Test.UserServiceTests
 {
     public class UserRegistrationTest : BaseUserTest
     {
-        public UserRegistrationTest() : base()
-        {
-        }
+        public UserRegistrationTest() : base() { }
 
         [Fact]
         public async void Should_RegisterNewUser()
@@ -135,7 +133,7 @@ namespace MessagingApi.Test.UserTests
             //Arrange
             mockOptions.Setup(x => x.Value).Returns(options);
 
-            mockManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).Returns(Task.FromResult(new User()));
+            mockManager.Setup(x => x.FindByNameAsync(It.IsAny<string>())).Returns(Task.FromResult(new User()));
 
             var user = new User() { Email = "test@test.nl", UserName = "test", FirstName = "test", Surname = "test" };
             var password = "test";
