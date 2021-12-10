@@ -18,6 +18,6 @@ namespace MessagingApi.Business.Interfaces
         Task UpdateUser(User user, string password);
         Task BlockUserById(int id);
         Task<User> GetCurrentUserFromHttp(HttpContext http);
-
+        Task<IEnumerable<User>> GetLoggedInUsers();
     }
 }

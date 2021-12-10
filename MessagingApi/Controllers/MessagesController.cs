@@ -13,12 +13,5 @@ namespace MessagingApi.Controllers
         {
             _service = service;
         }
-
-        //[HttpGet]
-        //[Authorize(Roles = "User, Groupmoderator, Administrator")]
-        //public async Task<ActionResult> GetListOfLoggedInUser(int page, int type, int typeId)
-        //{
-        //
-        //}
     }
 }

@@ -2,9 +2,9 @@
 {
     public enum Type
     {
-        General,
-        OneOnOne,
-        Group
+        General,        
+        Group,
+        OneOnOne
     }
 
     public class MessageModel
