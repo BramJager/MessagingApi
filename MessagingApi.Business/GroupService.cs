@@ -50,16 +50,13 @@ namespace MessagingApi.Business
         {
             await _repository.Update(group);
             return group;
-        }
-
-        public string ComputeHash(string value)
+        }        
+        
+        public async Task<Group> RemoveUserFromGroup(Group group, User user)
         {
-            using (var sha256 = SHA256.Create())
-            {
-                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(value));
-                var hash = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
-                return hash;
-            }
+            group.Users.Remove(user);
+            await _repository.Update(group);
+            return group;
         }
 
         public string GetSalt()
@@ -72,11 +69,14 @@ namespace MessagingApi.Business
             }
         }
 
-        public async Task<Group> RemoveUserFromGroup(Group group, User user)
+        public string ComputeHash(string value)
         {
-            group.Users.Remove(user);
-            await _repository.Update(group);
-            return group;
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(value));
+                var hash = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+                return hash;
+            }
         }
     }
 }

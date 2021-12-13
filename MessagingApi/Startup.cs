@@ -3,6 +3,7 @@ using MessagingApi.Business.Data;
 using MessagingApi.Business.Interfaces;
 using MessagingApi.Business.Settings;
 using MessagingApi.Domain.Objects;
+using MessagingApi.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -95,6 +96,8 @@ namespace MessagingApi
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseUserBlockedMiddleware();
 
             app.UseEndpoints(endpoints =>
             {

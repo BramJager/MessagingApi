@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Moq;
 using System.Threading.Tasks;
 using Xunit;
-
+                                                                                          
 namespace MessagingApi.Test.UserServiceTests
 {
     public class UpdateUserTest : BaseUserTest

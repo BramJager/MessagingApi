@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,7 +15,10 @@ namespace MessagingApi.Domain.Objects
 
         [Required]
         public string Surname { get; set; }
-        public bool Blocked { get; set; } = false;
+
+        public DateTime LastActive { get; set; }
+
+        public bool Blocked { get; set; }
 
         public ICollection<Group> Groups { get; set; }
     }
