@@ -99,6 +99,7 @@ namespace MessagingApi
 
             app.UseUserBlockedMiddleware();
 
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

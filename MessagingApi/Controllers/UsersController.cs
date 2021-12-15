@@ -69,8 +69,6 @@ namespace MessagingApi.Controllers
         {
             try
             {
-                var currentUser = await _service.GetCurrentUserFromHttp(HttpContext);
-                if (currentUser.Blocked == true) throw new AccessViolationException("You are currently blocked, contact the admin for more information.");
                 var users = await _service.GetUsers();
                 return Ok(users);
             }
@@ -105,8 +103,6 @@ namespace MessagingApi.Controllers
             try
             {
                 var currentUser = await _service.GetCurrentUserFromHttp(HttpContext);
-
-                if (currentUser == null || currentUser.Blocked == true) throw new AccessViolationException("You are currently blocked, contact the admin for more information.");    
 
                 _mapper.Map(model, currentUser);
 

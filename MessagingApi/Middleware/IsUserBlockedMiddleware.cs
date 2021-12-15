@@ -3,9 +3,7 @@ using MessagingApi.Domain.Objects;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace MessagingApi.Middleware
 {
@@ -22,12 +20,7 @@ namespace MessagingApi.Middleware
         {
             User user = await service.GetCurrentUserFromHttp(context);
 
-            if (user == null)
-            {
-                await _next.Invoke(context);
-            }
-
-            else if (user.Blocked)
+            if (user != null && user.Blocked)
             {
                 context.Response.Clear();
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -40,6 +33,7 @@ namespace MessagingApi.Middleware
             }
         }   
     }
+
     public static class MiddlewareExtensions
     {
         public static IApplicationBuilder UseUserBlockedMiddleware(this IApplicationBuilder builder)

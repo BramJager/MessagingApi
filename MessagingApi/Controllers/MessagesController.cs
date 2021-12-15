@@ -1,5 +1,8 @@
 ﻿using MessagingApi.Business.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MessagingApi.Controllers
 {
@@ -12,6 +15,40 @@ namespace MessagingApi.Controllers
         public MessagesController(IMessageService service)
         {
             _service = service;
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Administrator, User, Groupmoderator")]
+        public async Task<ActionResult> GetPagedMessages(int Page, int Type, int? GroupId)
+        {
+            if (Type == 0)
+            {
+                var messages = await _service.GetMessagesById(1);
+                messages = messages.OrderBy(on => on.DateTime)
+                .Skip((Page - 1) * 10)
+                .Take(10)
+                .ToList();
+
+                return Ok(messages);
+            }
+
+            else
+            {
+                if (GroupId == null)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    var messages = await _service.GetMessagesById(GroupId.Value);
+                    messages = messages.OrderBy(on => on.DateTime)
+                    .Skip((Page - 1) * 10)
+                    .Take(10)
+                    .ToList();
+
+                    return Ok(messages);
+                }
+            }
         }
     }
 }
