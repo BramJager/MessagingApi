@@ -1,8 +1,8 @@
 ﻿using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MessagingApi.Business
 {
@@ -27,7 +27,6 @@ namespace MessagingApi.Business
 
         public async Task<IEnumerable<Message>> SearchMessagesByQuery(string query)
         {
-            //return await _repository.Search(x => x.Content.Contains(query));
             var list = await _repository.GetAll();
             return list.Where(x => x.Content.Contains(query));
         }

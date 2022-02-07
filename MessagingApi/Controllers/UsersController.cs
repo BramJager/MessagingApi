@@ -1,12 +1,12 @@
-﻿using MessagingApi.Business.Interfaces;
+﻿using AutoMapper;
+using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
+using MessagingApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using System;
 using System.Security.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using AutoMapper;
-using MessagingApi.Models;
+using System.Threading.Tasks;
 
 namespace MessagingApi.Controllers
 {
@@ -63,13 +63,29 @@ namespace MessagingApi.Controllers
             }
         }
 
-        [HttpGet("list")]
+        [HttpGet("list/loggedin")]
         [Authorize(Roles = "User, Groupmoderator, Administrator")]
         public async Task<ActionResult> GetListOfLoggedInUser()
         {
             try
             {
                 var users = await _service.GetLoggedInUsers();
+                return Ok(users);
+            }
+
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("list")]
+        [Authorize(Roles = "User, Groupmoderator, Administrator")]
+        public async Task<ActionResult> GetListAllUsers()
+        {
+            try
+            {
+                var users = await _service.GetUsers();
                 return Ok(users);
             }
 

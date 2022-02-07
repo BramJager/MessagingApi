@@ -3,18 +3,19 @@ using Microsoft.AspNetCore.Identity;
 using Moq;
 using System.Threading.Tasks;
 using Xunit;
-                                                                                          
+
 namespace MessagingApi.Test.UserServiceTests
 {
     public class UpdateUserTest : BaseUserTest
     {
-        [Fact]
-        public async void Should_UpdatUserWithoutPassword()
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async void Should_UpdatUserWithoutPassword(string password)
         {
             //Arrange
             int id = 1;
             string updatedEmail = "test1@test.nl";
-            string password = "";
 
             var updatedUser = new User() {Id = id, Email = updatedEmail };
 

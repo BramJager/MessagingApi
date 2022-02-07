@@ -25,9 +25,10 @@ namespace MessagingApi.Business
 
         public async Task<Group> AddUserToGroup(Group group, User user)
         {
-            group.Users.Add(user);
-            await _repository.Update(group);
-            return group;
+            var group1 = await _repository.GetById(group.GroupId);
+            group1.Users.Add(user);
+            await _repository.Update(group1);
+            return group1;
         }
 
         public async Task<Group> GetGroupById(int id)

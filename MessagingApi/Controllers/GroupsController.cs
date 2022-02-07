@@ -1,11 +1,11 @@
-﻿using MessagingApi.Business.Interfaces;
+﻿using AutoMapper;
+using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using System;
-using AutoMapper;
 using MessagingApi.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace MessagingApi.Controllers
 {
@@ -24,6 +24,21 @@ namespace MessagingApi.Controllers
             _userService = userService;
             _mapper = mapper;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetGroups()
+        {
+            try
+            {
+                var groups = await _groupService.GetGroups();
+                return Ok(groups);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
 
         [HttpPost]
         public async Task<ActionResult> CreateGroup(GroupModel model)
@@ -57,13 +72,34 @@ namespace MessagingApi.Controllers
         }
 
         [HttpPost]
+        [Route("invite")]
+        [Authorize(Roles = "Groupmoderator, Administrator")]
+        public async Task<ActionResult> AddUserToGroup(JoinModel model)
+        {
+            var user = await _userService.GetUserById(model.UserId);
+            var group = await _groupService.GetGroupById(model.GroupId);
+
+            try
+            {
+                await _groupService.AddUserToGroup(group, user);
+                return Ok();
+            }
+
+            catch (Exception e)
+            {
+
+                return BadRequest(e.Message);
+            }
+        }
+
+
+        [HttpPost]
         [Route("join")]
-        public async Task<ActionResult> InviteUserOrJoinGroup(JoinModel model)
+        public async Task<ActionResult> JoinGroup(JoinModel model)
         {
             try
             {
                 var currentUser = await _userService.GetCurrentUserFromHttp(HttpContext);
-                var roles = await _userService.GetRolesByUser(currentUser);
                 var user = await _userService.GetUserById(model.UserId);
                 var group = await _groupService.GetGroupById(model.GroupId);
 
@@ -84,12 +120,6 @@ namespace MessagingApi.Controllers
 
                         throw new ArgumentException(nameof(model.Password));
                     }
-                }
-
-                if (roles.Contains("Administrator") || roles.Contains("Groupmoderator"))
-                {
-
-                    throw new NotImplementedException();
                 }
 
                 throw new UnauthorizedAccessException();
