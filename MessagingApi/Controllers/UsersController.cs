@@ -69,7 +69,7 @@ namespace MessagingApi.Controllers
         {
             try
             {
-                var users = await _service.GetUsers();
+                var users = await _service.GetLoggedInUsers();
                 return Ok(users);
             }
 

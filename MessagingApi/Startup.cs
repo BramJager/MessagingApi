@@ -116,6 +116,7 @@ namespace MessagingApi
             app.UseAuthorization();
 
             app.UseUserBlockedMiddleware();
+            app.UseUpdateUserLastActiveMiddleware();
 
 
             app.UseEndpoints(endpoints =>

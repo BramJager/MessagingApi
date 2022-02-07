@@ -40,5 +40,9 @@ namespace MessagingApi.Middleware
         {
             return builder.UseMiddleware<IsUserBlockedMiddleware>();
         }
+        public static IApplicationBuilder UseUpdateUserLastActiveMiddleware(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<UpdateUserLastActiveMiddleware>();
+        }
     }
 }

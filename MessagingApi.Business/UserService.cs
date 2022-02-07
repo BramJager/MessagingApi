@@ -47,9 +47,9 @@ namespace MessagingApi.Business
             return await _userManager.Users.ToListAsync();
         }
 
-        public Task<IEnumerable<User>> GetLoggedInUsers()
+        public async Task<IEnumerable<User>> GetLoggedInUsers()
         {
-            throw new NotImplementedException();
+            return await _userManager.Users.Where(u => u.LastActive >= DateTime.Now.AddMinutes(-5)).ToListAsync();
         }
 
         public async Task<User> GetUserByUsername(string username)
