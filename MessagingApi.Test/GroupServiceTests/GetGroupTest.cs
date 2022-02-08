@@ -21,7 +21,7 @@ namespace MessagingApi.Test.GroupServiceTests
         {
             //Arrange
             int id = 1;
-            mockRepository.Setup(x => x.GetById(id)).Returns(new Task<Group>(x => new Group() { GroupId = id}, null));
+            mockRepository.Setup(x => x.GetById(id)).Returns(Task.FromResult(new Group() { GroupId = id}));
 
             //Act
             var group = await service.GetGroupById(id);
