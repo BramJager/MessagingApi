@@ -1,4 +1,5 @@
 ﻿using MessagingApi.Business.Interfaces;
+using MessagingApi.Domain.Objects;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -15,6 +16,13 @@ namespace MessagingApi.Controllers
         public MessagesController(IMessageService service)
         {
             _service = service;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateMessage(Message message)
+        {
+            await _service.CreateMessage(message);
+            return Ok();
         }
 
         [HttpGet]
