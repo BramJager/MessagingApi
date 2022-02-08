@@ -1,5 +1,6 @@
 ﻿using MessagingApi.Business.Interfaces;
 using MessagingApi.Domain.Objects;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -17,9 +18,16 @@ namespace MessagingApi.Business
             _repository = repository;
         }
 
+        public void ValidateGroupForCreating(Group group)
+        {
+            if (group == null) throw new ArgumentNullException("Group");
+            if (group.Name.IsNullOrEmpty()) throw new ArgumentNullException(group.Name, nameof(group));
+            if (group.Visibility == Visibility.Private && string.IsNullOrEmpty(group.PasswordHash)) throw new ArgumentNullException("Password is required for private group.");
+        }
+
         public async Task CreateGroup(Group group)
         {
-            if (group.Visibility == Visibility.Private && string.IsNullOrEmpty(group.PasswordHash)) throw new ArgumentException("Password is required for private group.");
+            ValidateGroupForCreating(group);
             await _repository.Add(group);
         }
 
