@@ -8,6 +8,8 @@ namespace MessagingApi.Test.GroupServiceTests
 {
     public class CreateGroupTest : BaseGroupTest
     {
+        public CreateGroupTest() : base() {  }
+
         [Theory]
         [InlineData(null)]
         [InlineData("")]

@@ -15,7 +15,6 @@ namespace MessagingApi.Test.UserServiceTests
             int id = 1;
             mockManager.Setup(x => x.FindByIdAsync(id.ToString())).ReturnsAsync(new User() { Id = 1});
 
-
             //Act
             var user = await service.GetUserById(id);
 

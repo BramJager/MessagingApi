@@ -1,9 +1,5 @@
 ﻿using MessagingApi.Domain.Objects;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -11,10 +7,7 @@ namespace MessagingApi.Test.GroupServiceTests
 {
     public class GetGroupTest : BaseGroupTest
     {
-        public GetGroupTest() : base()
-        {
-
-        }
+        public GetGroupTest() : base(){ }
 
         [Fact]
         public async void Should_GetUserById()
