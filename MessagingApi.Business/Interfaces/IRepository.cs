@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -14,6 +15,5 @@ namespace MessagingApi.Business.Interfaces
         Task Delete(TEntity entity);
         Task Save();
         Task<IEnumerable<TEntity>> Search(Expression<Func<TEntity, bool>> predicate);
-
     }
 }

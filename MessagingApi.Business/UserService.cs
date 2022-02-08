@@ -59,19 +59,11 @@ namespace MessagingApi.Business
 
         public async Task RegisterUser(User user, string password)
         {
-            try
-            {
-                await ValidateUserForRegistration(user);
-                if (password.IsNullOrEmpty()) throw new ArgumentException("The password cannot be null or empty.");
-                await _userManager.CreateAsync(user, password);
-                await _userManager.UpdateSecurityStampAsync(user);
-                await _userManager.AddToRoleAsync(user, "User");
-            }
-
-            catch 
-            { 
-                throw; 
-            }
+            await ValidateUserForRegistration(user);
+            if (password.IsNullOrEmpty()) throw new ArgumentException("The password cannot be null or empty.");
+            await _userManager.CreateAsync(user, password);
+            await _userManager.UpdateSecurityStampAsync(user);
+            await _userManager.AddToRoleAsync(user, "User");
         }
 
         public async Task<bool> CheckLogin(string username, string password)

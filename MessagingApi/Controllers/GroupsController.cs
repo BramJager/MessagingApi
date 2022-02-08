@@ -28,46 +28,33 @@ namespace MessagingApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetGroups()
         {
-            try
-            {
-                var groups = await _groupService.GetGroups();
-                return Ok(groups);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
+            var groups = await _groupService.GetGroups();
+            return Ok(groups);
         }
 
 
         [HttpPost]
         public async Task<ActionResult> CreateGroup(GroupModel model)
         {
-            try
-            {
-                var group = _mapper.Map<Group>(model);
-                
-                if (group.Visibility == Visibility.Private)
-                {
-                    if (!string.IsNullOrEmpty(model.Password))
-                    {
-                        group.Salt = _groupService.GetSalt();
-                        group.PasswordHash = _groupService.ComputeHash(model.Password + group.Salt);
-                    }
 
-                    else
-                    {
-                        throw new ArgumentNullException(nameof(model.Password));
-                    }
+            var group = _mapper.Map<Group>(model);
+
+            if (group.Visibility == Visibility.Private)
+            {
+                if (!string.IsNullOrEmpty(model.Password))
+                {
+                    group.Salt = _groupService.GetSalt();
+                    group.PasswordHash = _groupService.ComputeHash(model.Password + group.Salt);
                 }
 
-                await _groupService.CreateGroup(group);
-                return Ok();
+                else
+                {
+                    throw new ArgumentNullException(nameof(model.Password));
+                }
             }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
+
+            await _groupService.CreateGroup(group);
+            return Ok();
 
         }
 
@@ -79,17 +66,9 @@ namespace MessagingApi.Controllers
             var user = await _userService.GetUserById(model.UserId);
             var group = await _groupService.GetGroupById(model.GroupId);
 
-            try
-            {
-                await _groupService.AddUserToGroup(group, user);
-                return Ok();
-            }
+            await _groupService.AddUserToGroup(group, user);
+            return Ok();
 
-            catch (Exception e)
-            {
-
-                return BadRequest(e.Message);
-            }
         }
 
 
@@ -97,70 +76,56 @@ namespace MessagingApi.Controllers
         [Route("join")]
         public async Task<ActionResult> JoinGroup(JoinModel model)
         {
-            try
-            {
-                var currentUser = await _userService.GetCurrentUserFromHttp(HttpContext);
-                var user = await _userService.GetUserById(model.UserId);
-                var group = await _groupService.GetGroupById(model.GroupId);
 
-                if (currentUser.Id == model.UserId)
+            var currentUser = await _userService.GetCurrentUserFromHttp(HttpContext);
+            var user = await _userService.GetUserById(model.UserId);
+            var group = await _groupService.GetGroupById(model.GroupId);
+
+            if (currentUser.Id == model.UserId)
+            {
+                if (group.Visibility == Visibility.Public)
                 {
-                    if (group.Visibility == Visibility.Public)
+                    await _groupService.AddUserToGroup(group, currentUser);
+                    return Ok();
+                }
+
+                else
+                {
+                    if (group.PasswordHash == _groupService.ComputeHash(model.Password + group.Salt))
                     {
                         await _groupService.AddUserToGroup(group, currentUser);
                         return Ok();
                     }
-                    else
-                    {
-                        if (group.PasswordHash == _groupService.ComputeHash(model.Password + group.Salt))
-                        {
-                            await _groupService.AddUserToGroup(group, currentUser);
-                            return Ok();
-                        }
 
-                        throw new ArgumentException(nameof(model.Password));
-                    }
+                    throw new ArgumentException(nameof(model.Password));
                 }
-
-                throw new UnauthorizedAccessException();
             }
 
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
+            throw new UnauthorizedAccessException();
         }
 
         [HttpDelete]
         [Route("remove")]
         public async Task<ActionResult> RemoveUserFromGroup(RemoveUserFromGroupModel model)
         {
-            try
+            var currentUser = await _userService.GetCurrentUserFromHttp(HttpContext);
+            var roles = await _userService.GetRolesByUser(currentUser);
+            var group = await _groupService.GetGroupById(model.GroupId);
+
+            if (currentUser.Id == model.UserId)
             {
-                var currentUser = await _userService.GetCurrentUserFromHttp(HttpContext);
-                var roles = await _userService.GetRolesByUser(currentUser);
-                var group = await _groupService.GetGroupById(model.GroupId);
-
-                if (currentUser.Id == model.UserId)
-                {
-                    await _groupService.RemoveUserFromGroup(group, currentUser);
-                    return Ok();
-                }
-
-                if (roles.Contains("Administrator") || roles.Contains("Groupmoderator"))
-                {
-                    var user = await _userService.GetUserById(model.UserId);
-                    await _groupService.RemoveUserFromGroup(group, user);
-                    return Ok();
-                }
-
-                throw new UnauthorizedAccessException();
+                await _groupService.RemoveUserFromGroup(group, currentUser);
+                return Ok();
             }
 
-            catch(Exception e)
+            if (roles.Contains("Administrator") || roles.Contains("Groupmoderator"))
             {
-                return BadRequest(e.Message);
+                var user = await _userService.GetUserById(model.UserId);
+                await _groupService.RemoveUserFromGroup(group, user);
+                return Ok();
             }
+
+            throw new UnauthorizedAccessException();
         }
 
         [HttpDelete]
@@ -168,20 +133,14 @@ namespace MessagingApi.Controllers
         [Authorize(Roles = "Groupmoderator, Administrator")]
         public async Task<ActionResult> RemoveGroup(int groupId)
         {
-            try
-            {
-                var group = await _groupService.GetGroupById(groupId);
 
-                group.Removed = true;
+            var group = await _groupService.GetGroupById(groupId);
 
-                await _groupService.UpdateGroup(group);
-                return Ok();
-            }
+            group.Removed = true;
 
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
+            await _groupService.UpdateGroup(group);
+            return Ok();
+
         }
     }
 }
